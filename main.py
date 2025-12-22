@@ -30,11 +30,11 @@ def build_pipeline(num_attribs,cat_attribs) :
     ])
     return full_pipeline
 
+
 if not os.path.exists(MODEL_FILE):
     #then we have to train the model
     housing = pd.read_csv("housing.csv")  
     # print(housing.head() )
-    # print(housing.shape)
     
 
     housing["income_cat"] = pd.cut(housing["median_income"],
