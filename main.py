@@ -35,6 +35,7 @@ if not os.path.exists(MODEL_FILE):
     housing = pd.read_csv("housing.csv")  
     # print(housing.head() )
     # print(housing.shape)
+    
 
     housing["income_cat"] = pd.cut(housing["median_income"],
                                 bins=[0.0, 1.5, 3.0, 4.5, 6.0, np.inf],
