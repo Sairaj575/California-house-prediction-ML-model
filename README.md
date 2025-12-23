@@ -96,7 +96,7 @@ python main.py
 ## 👨‍💻 Author
 
 **Sairaj Umbarkar**  
-Aspiring Data Scientist  
+Aspiring Data Science enthusiast  
 
 ---
 
