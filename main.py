@@ -146,6 +146,11 @@ col1, col2 = st.columns([2, 1])
 with col1:
     st.subheader("Input Data")
     st.dataframe(input_df, use_container_width=True)
+    st.subheader("Location on Map")
+    st.map(pd.DataFrame({
+    "lat": [latitude],
+    "lon": [longitude]
+}))
 
 with col2:
     st.subheader("Location Info")
