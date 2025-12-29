@@ -9,72 +9,159 @@ import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 import os
 import joblib
+import streamlit as st
 
 
 MODEL_FILE = "model.pkl"
-PIPELINE_FILE ="pipeline.pkl"
+PIPELINE_FILE = "pipeline.pkl"
 
-def build_pipeline(num_attribs,cat_attribs) :
+# Page
+st.set_page_config(
+    page_title="California House Price Predictor",
+    page_icon="🏠",
+    layout="wide"
+)
+
+def build_pipeline(num_attribs, cat_attribs):
     num_pipeline = Pipeline([
-    ("impute",SimpleImputer(strategy="median")),
-    ("scaler",StandardScaler())
+        ("impute", SimpleImputer(strategy="median")),
+        ("scaler", StandardScaler())
     ])
+
     cat_pipeline = Pipeline([
-        ("ohe",OneHotEncoder(handle_unknown="ignore")) 
+        ("ohe", OneHotEncoder(handle_unknown="ignore"))
     ])
 
-    full_pipeline = ColumnTransformer([
-        ("num",num_pipeline,num_attribs),
-        ("cat",cat_pipeline,cat_attribs)
+    return ColumnTransformer([
+        ("num", num_pipeline, num_attribs),
+        ("cat", cat_pipeline, cat_attribs)
     ])
-    return full_pipeline
 
+def train_model():
+    # Train model 
+    housing = pd.read_csv("housing.csv")
 
-if not os.path.exists(MODEL_FILE):
-    #then we have to train the model
-    housing = pd.read_csv("housing.csv")  
-    # print(housing.head() )
-    
+    housing["income_cat"] = pd.cut(
+        housing["median_income"],
+        bins=[0.0, 1.5, 3.0, 4.5, 6.0, np.inf],
+        labels=[1, 2, 3, 4, 5]
+    )
 
-    housing["income_cat"] = pd.cut(housing["median_income"],
-                                bins=[0.0, 1.5, 3.0, 4.5, 6.0, np.inf],
-                                labels=[1,2,3,4,5])
+    split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+    for train_idx, _ in split.split(housing, housing["income_cat"]):
+        housing = housing.loc[train_idx].drop("income_cat", axis=1)
 
-    split = StratifiedShuffleSplit(n_splits=1 , test_size=0.2 , random_state=42)
+    labels = housing["median_house_value"]
+    features = housing.drop("median_house_value", axis=1)
 
-    for train_index , test_index in split.split(housing,housing["income_cat"]) :
-        housing = housing.loc[train_index].drop("income_cat",axis=1)
-       
-    housing_labels = housing["median_house_value"].copy()
-    housing_features = housing.drop("median_house_value" ,axis=1)
-   
-    num_attribs = housing_features.drop('ocean_proximity', axis=1).columns.tolist()
-    cat_attribs = ['ocean_proximity']
+    num_attribs = features.drop("ocean_proximity", axis=1).columns.tolist()
+    cat_attribs = ["ocean_proximity"]
 
-    pipeline = build_pipeline(num_attribs,cat_attribs)
-    housing_prepared = pipeline.fit_transform(housing_features)
+    pipeline = build_pipeline(num_attribs, cat_attribs)
+    features_prepared = pipeline.fit_transform(features)
 
-    model = RandomForestRegressor()
-    model.fit(housing_prepared,housing_labels)
+    model = RandomForestRegressor(random_state=42)
+    model.fit(features_prepared, labels)
 
-    joblib.dump(model,MODEL_FILE)
-    joblib.dump(pipeline , PIPELINE_FILE)
-    print("Model trained")
-    
-else:
-    #do inference 
-    model = joblib.load(MODEL_FILE)
-    pipeline = joblib.load(PIPELINE_FILE)
+    joblib.dump(model, MODEL_FILE)
+    joblib.dump(pipeline, PIPELINE_FILE)
 
-    input_data = pd.read_csv("input.csv") 
-    transformed_input= pipeline.transform(input_data)
-    predictions = model.predict(transformed_input)
-    input_data['median_house_value'] = predictions
-    input_data.to_csv("output.csv", index = False) 
-    print("The predictions are given to the output file.")
+    return model, pipeline
 
+@st.cache_resource
+def load_model():
+    if not os.path.exists(MODEL_FILE) or not os.path.exists(PIPELINE_FILE):
+        return train_model()
+    return joblib.load(MODEL_FILE), joblib.load(PIPELINE_FILE)
 
-dff = pd.read_csv("input_copy.csv")
-y_true = dff['median_house_value']
-dff1 = pd.read_csv("output.csv")
-y_pred = dff1['median_house_value']
+# App title
+st.title("California House Price Predictor")
+
+# Load model
+try:
+    model, pipeline = load_model()
+    model_loaded = True
+except Exception as e:
+    st.error("Model could not be loaded.")
+    model_loaded = False
+
+# Sidebar
+st.sidebar.header("Input Features")
+
+longitude = st.sidebar.number_input(
+    "Longitude", -124.0, -114.0, -122.23, format="%.2f"
+)
+
+latitude = st.sidebar.number_input(
+    "Latitude", 32.0, 42.0, 37.88, format="%.2f"
+)
+
+housing_median_age = st.sidebar.number_input(
+    "Housing Median Age", 1, 100, 41
+)
+
+total_rooms = st.sidebar.number_input(
+    "Total Rooms", 1, value=880
+)
+
+total_bedrooms = st.sidebar.number_input(
+    "Total Bedrooms", 1, value=129
+)
+
+population = st.sidebar.number_input(
+    "Population", 1, value=322
+)
+
+households = st.sidebar.number_input(
+    "Households", 1, value=126
+)
+
+median_income = st.sidebar.number_input(
+    "Median Income", 0.0, value=8.3252, format="%.4f"
+)
+
+ocean_proximity = st.sidebar.selectbox(
+    "Ocean Proximity",
+    ["<1H OCEAN", "INLAND", "ISLAND", "NEAR BAY", "NEAR OCEAN"]
+)
+
+predict_button = st.sidebar.button("Predict Price")
+
+# Input dataframe
+input_df = pd.DataFrame({
+    "longitude": [longitude],
+    "latitude": [latitude],
+    "housing_median_age": [housing_median_age],
+    "total_rooms": [total_rooms],
+    "total_bedrooms": [total_bedrooms],
+    "population": [population],
+    "households": [households],
+    "median_income": [median_income],
+    "ocean_proximity": [ocean_proximity]
+})
+
+# Layout
+col1, col2 = st.columns([2, 1])
+
+with col1:
+    st.subheader("Input Data")
+    st.dataframe(input_df, use_container_width=True)
+
+with col2:
+    st.subheader("Location Info")
+    st.metric("Longitude", longitude)
+    st.metric("Latitude", latitude)
+    st.metric("Ocean Proximity", ocean_proximity)
+
+# Prediction
+if predict_button and model_loaded:
+    try:
+        transformed = pipeline.transform(input_df)
+        prediction = model.predict(transformed)[0]
+
+        st.markdown("---")
+        st.subheader("Prediction Result")
+        st.metric("Predicted Median House Value", f"${prediction:,.2f}")
+
+    except Exception as e:
+        st.error("Prediction failed.")
