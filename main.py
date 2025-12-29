@@ -7,7 +7,6 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import root_mean_squared_error , r2_score
 import os
 import joblib
 
@@ -79,10 +78,3 @@ dff = pd.read_csv("input_copy.csv")
 y_true = dff['median_house_value']
 dff1 = pd.read_csv("output.csv")
 y_pred = dff1['median_house_value']
-
-rmse = root_mean_squared_error(y_true, y_pred)
-r2 = r2_score(y_true, y_pred)
-
-print("RMSE:", rmse)
-print("R2 Score:", r2)
-
