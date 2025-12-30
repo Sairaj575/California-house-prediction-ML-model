@@ -1,103 +1,111 @@
-# 🏠 California Housing Price Prediction (End-to-End ML Pipeline)
+# 🏠 California House Price Predictor (Streamlit App)
 
-This project implements an **end-to-end machine learning pipeline** for predicting **median house prices** using the California Housing dataset.  
-It covers **data preprocessing, stratified sampling, feature engineering, model training, inference, model persistence, and evaluation**.
+This project is an **interactive Streamlit web application** built using Python and scikit-learn to predict **median house prices in California**.  
+The app uses a trained **Random Forest regression model** and provides both **single prediction** and **batch prediction** capabilities through a clean UI.
 
 ---
 
-## 📌 Project Overview
+## 📌 Application Overview
 
-- Uses **Stratified Sampling** based on income categories to maintain data distribution  
-- Applies **numerical & categorical preprocessing** using `Pipeline` and `ColumnTransformer`  
-- Trains a **Random Forest Regressor**  
-- Saves trained **model and pipeline**  
-- Supports **batch inference** on new input data  
-- Evaluates predictions using **RMSE and R² Score**
+- Web-based UI built using **Streamlit**
+- Predicts median house prices using California housing data
+- Uses a trained **Random Forest Regressor**
+- Consistent preprocessing using scikit-learn pipelines
+- Supports **single input prediction** and **CSV batch prediction**
+- Displays property location on an interactive map
+- Allows users to download prediction results as a CSV file
+
+---
+
+## 🧠 Machine Learning Approach
+
+- Stratified sampling based on income categories
+- Numerical preprocessing:
+  - Median imputation
+  - Standard scaling
+- Categorical preprocessing:
+  - One-hot encoding for ocean proximity
+- Model training using RandomForestRegressor
+- Model and preprocessing pipeline saved using Joblib
 
 ---
 
 ## 📂 Project Structure
 
 ```
-📦 california-housing-ml
- ┣ 📜 housing.csv
- ┣ 📜 input.csv
- ┣ 📜 input_copy.csv
- ┣ 📜 output.csv
- ┣ 📜 model.pkl
- ┣ 📜 pipeline.pkl
- ┣ 📜 main.py
- ┗ 📜 README.md
+📦 california-house-price-streamlit
+ ┣ 📜 housing.csv              # Training dataset
+ ┣ 📜 model.pkl                # Trained ML model
+ ┣ 📜 pipeline.pkl             # Preprocessing pipeline
+ ┣ 📜 main.py                  # Streamlit application
+ ┣ 📜 input.csv                # Sample input file
+ ┗ 📜 README.md                # Project documentation
 ```
 
 ---
 
-## ⚙️ Technologies Used
+## ▶️ How to Run the Application
 
-- Python  
-- Pandas  
-- NumPy  
-- Scikit-learn  
-- Joblib  
+### 1️⃣ Install Dependencies
 
----
-
-## 🧠 Machine Learning Workflow
-
-1. Load dataset  
-2. Create income categories  
-3. Perform stratified train split  
-4. Preprocess data  
-5. Train Random Forest model  
-6. Save model and pipeline  
-7. Run inference on new data  
-8. Evaluate using RMSE and R²  
-
----
-
-## 🧪 Model Details
-
-- **Algorithm:** RandomForestRegressor  
-- **Target:** `median_house_value`  
-- **Metrics:** RMSE, R² Score  
-
----
-
-## ▶️ How to Run
-
-### Install dependencies
 ```bash
-pip install pandas numpy scikit-learn joblib
+pip install streamlit pandas numpy scikit-learn joblib
 ```
 
-### Run the script
+### 2️⃣ Run the Streamlit App
+
 ```bash
-python main.py
+streamlit run main.py
 ```
+
+The application will open in your browser.
 
 ---
 
-## 📤 Output
+## 🖥️ Application Features
 
-- Predictions saved to `output.csv`
-- Evaluation metrics printed in console
+### 🔹 Single Prediction
+- Enter house details using the sidebar
+- Click **Predict Price**
+- View predicted median house value instantly
+
+### 🔹 Location Visualization
+- Displays the selected location on an interactive map
+
+### 🔹 Batch Prediction
+- Upload a CSV file with multiple records
+- Preview data before prediction
+- Generate predictions for all rows
+- Download the output CSV with predicted values
+
+---
+
+## 📄 Input CSV Format
+
+The uploaded CSV file must contain the following columns:
+
+```
+longitude, latitude, housing_median_age, total_rooms, total_bedrooms,
+population, households, median_income, ocean_proximity
+```
 
 ---
 
 ## 🚀 Future Improvements
 
-- Hyperparameter tuning  
-- Advanced models (XGBoost, Gradient Boosting)  
-- API deployment (Flask/FastAPI)  
-- Docker support  
+- Model hyperparameter tuning
+- Performance optimization for large datasets
+- Deployment on Streamlit Cloud
+- API integration (FastAPI / Flask)
+- Model versioning and monitoring
 
 ---
 
 ## 👨‍💻 Author
 
 **Sairaj Umbarkar**  
-Aspiring Data Science enthusiast  
+Aspiring Data Science Enthusiast  
 
 ---
 
-⭐ If you like this project, give it a star!
+⭐ If you find this project useful, feel free to star the repository!
