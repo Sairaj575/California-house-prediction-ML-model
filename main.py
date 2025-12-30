@@ -170,3 +170,34 @@ if predict_button and model_loaded:
 
     except Exception as e:
         st.error("Prediction failed.")
+
+# Batch prediction
+st.markdown("---")
+st.subheader("Batch Prediction")
+
+uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
+
+if uploaded_file and model_loaded:
+    data = pd.read_csv(uploaded_file)
+
+    required_cols = input_df.columns.tolist()
+    if not all(col in data.columns for col in required_cols):
+        st.error("CSV file has missing columns.")
+    else:
+        with st.expander("Preview Data"):
+            st.dataframe(data.head())
+
+        if st.button("Generate Predictions"):
+            transformed = pipeline.transform(data[required_cols])
+            preds = model.predict(transformed)
+            data["predicted_median_house_value"] = preds
+
+            st.dataframe(data,width='stretch')
+
+            st.download_button(
+                "Download CSV",
+                data.to_csv(index=False),
+                "predictions.csv",
+                "text/csv"
+            )
+  
