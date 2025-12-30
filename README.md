@@ -49,7 +49,7 @@ The app uses a trained **Random Forest regression model** and provides both **si
 ### 1️⃣ Install Dependencies
 
 ```bash
-pip install streamlit pandas numpy scikit-learn joblib
+pip install streamlit pandas numpy scikit-learn==1.8.0 joblib
 ```
 
 ### 2️⃣ Run the Streamlit App
