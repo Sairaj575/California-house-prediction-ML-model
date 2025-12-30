@@ -1,4 +1,19 @@
 # 🏠 California House Price Predictor (Streamlit App)
+## 🚀 Live Web App
+
+You can try the fully deployed version of this project online:
+
+👉 https://california-house-prediction-ml-model-qpbrrxrgl6zgjyxkfdgyab.streamlit.app/
+
+This web application was built using **Streamlit** and allows users to:
+
+- 🌐 Enter house details via a sidebar form
+- 📍 Visualize the property location on an interactive map
+- 🔮 Predict median house prices in real time
+- 📁 Upload CSV files for bulk predictions
+- 📥 Download prediction results as a CSV file
+
+This live demo makes it easy to interact with the model without installing anything locally!
 
 This project is an **interactive Streamlit web application** built using Python and scikit-learn to predict **median house prices in California**.  
 The app uses a trained **Random Forest regression model** and provides both **single prediction** and **batch prediction** capabilities through a clean UI.
