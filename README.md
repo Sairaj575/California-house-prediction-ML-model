@@ -1,4 +1,4 @@
-# 🏠 California House Price Predictor (Streamlit App)
+# 🏠 California Housing Price Prediction (End-to-End ML Pipeline)
 ## 🚀 Live Web App
 
 You can try the fully deployed version of this project online:
